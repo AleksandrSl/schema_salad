@@ -23,3 +23,29 @@
 |19. typing||X     |
 |20. urllib||X     |
 |21. builtins||X   |
+|22. six|| X       |
+
+
+## Mypy installation
+
+Clone mypy repo
+
+Install virtualenv when there's some problems with ubuntu:
+```
+python3.6 -m venv /path/to/virt/env --without-pip
+cd /path/to/virt/env
+source /path/to/virt/env/bin/activate
+wget https://bootstrap.pypa.io/get-pip.py
+```
+
+Install requirements:
+```
+pip install -r test-requirements.txt
+```
+
+## Mypy usage
+
+Copy typeshed files into `mypy/typeshed` directory and run:
+```
+PYTHONPATH=.. python3 tests/mypy_test.py
+```
