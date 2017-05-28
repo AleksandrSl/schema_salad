@@ -36,6 +36,7 @@ python3.6 -m venv /path/to/virt/env --without-pip
 cd /path/to/virt/env
 source /path/to/virt/env/bin/activate
 wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py
 ```
 
 Install requirements:
