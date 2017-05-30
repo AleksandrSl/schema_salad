@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import print_function
 import unittest
 import schema_salad.ref_resolver
 import schema_salad.main
@@ -7,7 +9,8 @@ import rdflib
 import ruamel.yaml as yaml
 import json
 import os
-import urlparse
+
+from six.moves import urllib
 
 class TestFetcher(unittest.TestCase):
     def test_fetcher(self):
@@ -30,14 +33,14 @@ class TestFetcher(unittest.TestCase):
                     return False
 
             def urljoin(self, base, url):
-                urlsp = urlparse.urlsplit(url)
+                urlsp = urllib.parse.urlsplit(url)
                 if urlsp.scheme:
                     return url
-                basesp = urlparse.urlsplit(base)
+                basesp = urllib.parse.urlsplit(base)
 
                 if basesp.scheme == "keep":
                     return base + "/" + url
-                return urlparse.urljoin(base, url)
+                return urllib.parse.urljoin(base, url)
 
         loader = schema_salad.ref_resolver.Loader({}, fetcher_constructor=TestFetcher)
         self.assertEqual({"hello": "foo"}, loader.resolve_ref("foo.txt")[0])
@@ -52,6 +55,6 @@ class TestFetcher(unittest.TestCase):
         loader = schema_salad.ref_resolver.Loader({})
         foo = "file://%s/foo.txt" % os.getcwd()
         loader.cache.update({foo: "hello: foo"})
-        print(loader.cache)
+        print((loader.cache))
         self.assertEqual({"hello": "foo"}, loader.resolve_ref("foo.txt")[0])
         self.assertTrue(loader.check_exists(foo))
