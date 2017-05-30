@@ -50,3 +50,8 @@ Copy typeshed files into `mypy/typeshed` directory and run:
 ```
 PYTHONPATH=.. python3 tests/mypy_test.py
 ```
+
+## Notes
+
+* ruamel.ordereddict only works for python2.7, therefore use --ignore-missing-imports in mypy
+https://bitbucket.org/ruamel/ordereddict

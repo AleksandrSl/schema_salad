@@ -171,6 +171,7 @@ mypy: ${PYSOURCES}
 		typeshed/2.7/ruamel/
 	MYPYPATH=typeshed/2.7 mypy --py2 --disallow-untyped-calls \
 		 --fast-parser --warn-redundant-casts --warn-unused-ignores \
+		 --ignore-missing-imports \
 		 schema_salad
 
 jenkins:
