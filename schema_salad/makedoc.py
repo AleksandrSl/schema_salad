@@ -1,3 +1,4 @@
+from __future__ import absolute_import
 import mistune
 from . import schema
 import json
@@ -5,14 +6,20 @@ import os
 import copy
 import re
 import sys
-from StringIO import StringIO
+
 import logging
-import urlparse
+
+import six
+from six.moves import range
+from six.moves import urllib
+from six import StringIO
+
 from .aslist import aslist
 from .add_dictlist import add_dictlist
 import re
 import argparse
 from typing import cast, Any, Dict, IO, List, Optional, Set, Text, Union
+
 
 _logger = logging.getLogger("salad")
 
@@ -30,13 +37,13 @@ def has_types(items):  # type: (Any) -> List[basestring]
         for i in items:
             r.extend(has_types(i))
         return r
-    if isinstance(items, basestring):
+    if isinstance(items, six.string_types):
         return [items]
     return []
 
 
 def linkto(item):  # type: (Text) -> Text
-    _, frg = urlparse.urldefrag(item)
+    _, frg = urllib.parse.urldefrag(item)
     return "[%s](#%s)" % (frg, to_id(frg))
 
 
@@ -56,7 +63,7 @@ class MyRenderer(mistune.Renderer):
         ) % (header, body)
 
 
-def to_id(text):  # type: (Union[str, unicode]) -> Union[str, unicode]
+def to_id(text):  # type: (Union[str, Text]) -> Union[str, Text]
     textid = text
     if text[0] in ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"):
         try:
@@ -204,8 +211,8 @@ class RenderType(object):
                             if tp not in self.uses:
                                 self.uses[tp] = []
                             if (t["name"], f["name"]) not in self.uses[tp]:
-                                _, frg1 = urlparse.urldefrag(t["name"])
-                                _, frg2 = urlparse.urldefrag(f["name"])
+                                _, frg1 = urllib.parse.urldefrag(t["name"])
+                                _, frg2 = urllib.parse.urldefrag(f["name"])
                                 self.uses[tp].append((frg1, frg2))
                             if tp not in basicTypes and tp not in self.record_refs[t["name"]]:
                                 self.record_refs[t["name"]].append(tp)
@@ -227,7 +234,7 @@ class RenderType(object):
                 nbsp=False,             # type: bool
                 jsonldPredicate=None    # type: Optional[Dict[str, str]]
                 ):
-        # type: (...) -> Union[str, unicode]
+        # type: (...) -> Union[str, Text]
         if isinstance(tp, list):
             if nbsp and len(tp) <= 3:
                 return "&nbsp;|&nbsp;".join([self.typefmt(n, redirects, jsonldPredicate=jsonldPredicate) for n in tp])
@@ -266,7 +273,7 @@ class RenderType(object):
             elif str(tp) in basicTypes:
                 return """<a href="%s">%s</a>""" % (self.primitiveType, schema.avro_name(str(tp)))
             else:
-                _, frg = urlparse.urldefrag(tp)
+                _, frg = urllib.parse.urldefrag(tp)
                 if frg is not '':
                     tp = frg
                 return """<a href="#%s">%s</a>""" % (to_id(tp), tp)
@@ -325,7 +332,7 @@ class RenderType(object):
                 lines.append(l)
             f["doc"] = "\n".join(lines)
 
-            _, frg = urlparse.urldefrag(f["name"])
+            _, frg = urllib.parse.urldefrag(f["name"])
             num = self.toc.add_entry(depth, frg)
             doc = "%s %s %s\n" % (("#" * depth), num, frg)
         else:
@@ -417,12 +424,12 @@ class RenderType(object):
 
 
 def avrold_doc(j, outdoc, renderlist, redirects, brand, brandlink, primtype):
-    # type: (List[Dict[unicode, Any]], IO[Any], str, Dict, str, str, str) -> None
+    # type: (List[Dict[Text, Any]], IO[Any], str, Dict, str, str, str) -> None
     toc = ToC()
     toc.start_numbering = False
 
     rt = RenderType(toc, j, renderlist, redirects, primtype)
-    content = rt.typedoc.getvalue()  # type: unicode
+    content = rt.typedoc.getvalue()  # type: Text
 
     outdoc.write("""
     <!DOCTYPE html>
@@ -510,7 +517,7 @@ def main():  # type: () -> None
 
     args = parser.parse_args()
 
-    s = []  # type: List[Dict[unicode, Any]]
+    s = []  # type: List[Dict[Text, Any]]
     a = args.schema
     with open(a) as f:
         if a.endswith("md"):
