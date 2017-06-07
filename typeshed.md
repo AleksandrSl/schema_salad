@@ -9,7 +9,7 @@
 |5. requests| X |    |
 |6. ruamel||       |
 |7. argparse|X|    |
-|8. mistune||      |
+|8. mistune|X|      |
 |9. pathlib||X     |
 |10. pprint|X|     |
 |11. re||X         |
